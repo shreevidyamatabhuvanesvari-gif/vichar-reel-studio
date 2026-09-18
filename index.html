@@ -5,42 +5,46 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Vichar Reel Studio</title>
 <style>
-:root{color-scheme:dark;--bg:#090b12;--panel:#151927;--line:#30364a;--text:#fff;--muted:#aab1c5;--accent:#9b7cff}
+:root{color-scheme:dark;--bg:#080a11;--panel:#151a29;--field:#0c101a;--line:#30384e;--text:#fff;--muted:#aeb6cb;--accent:#8d70ff}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+body{padding:14px}
 button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.app{width:min(100%,760px);margin:auto;padding:16px}
-h1{font-size:22px;margin:0 0 14px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
-label{display:block;color:var(--muted);font-size:13px;margin:0 0 6px}
-textarea,select,input{width:100%;border:1px solid var(--line);border-radius:10px;background:#0d101a;color:var(--text);padding:11px;outline:none}
-textarea{min-height:100px;resize:vertical}
+button{border:0;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.app{width:min(100%,760px);margin:auto}
+h1{font-size:23px;line-height:1.2;margin:3px 0 15px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px}
+label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--field);color:var(--text);padding:11px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:105px;resize:vertical;line-height:1.5}
+.field{margin-bottom:12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
-button{border:0;border-radius:10px;padding:10px 14px;background:#292f43;color:#fff}
-button.primary{background:var(--accent);color:#fff}
-button.danger{background:#8e3047}
-button:disabled{opacity:.5;cursor:not-allowed}
-.hint{color:var(--muted);font-size:12px;line-height:1.5;margin-top:9px}
-.stage-wrap{display:flex;justify-content:center}
-.reel-stage{position:relative;width:min(100%,360px);aspect-ratio:9/16;overflow:hidden;border-radius:18px;background:#111;isolation:isolate}
-.photo-layer{position:absolute;inset:0;background:#202536 center/cover no-repeat;z-index:-2}
-.photo-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0002,#0005 50%,#0009)}
-.quote-text{position:absolute;left:9%;right:9%;top:50%;transform:translateY(-50%);text-align:center;font-size:clamp(21px,5.4vw,31px);line-height:1.42;font-weight:400;white-space:pre-wrap;text-shadow:0 0 5px #000,0 0 12px #000;overflow-wrap:anywhere}
-.quote-text .word{display:inline;color:#fff}
-.quote-text .c1{color:#ff668a}.quote-text .c2{color:#ffd166}.quote-text .c3{color:#70e1f5}.quote-text .c4{color:#b58cff}.quote-text .c5{color:#8dffb0}
-.reel-play-button{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;font-size:30px;background:#ffffffdd;color:#171923;box-shadow:0 4px 25px #0008;z-index:5;padding:0}
-.reel-play-button.hidden{display:none}
-.stage-controls{display:flex;justify-content:center;gap:9px;margin-top:12px}
-.fullscreen{width:100%}
-.status{text-align:center;color:var(--muted);font-size:13px;min-height:20px;margin-top:10px}
-.recording .quote-text{animation:softGlow 2.5s ease-in-out infinite alternate}
-@keyframes softGlow{from{text-shadow:0 0 5px #000,0 0 10px #fff4}to{text-shadow:0 0 6px #000,0 0 18px #fff9}}
+.btn{background:#2b3247;color:#fff;border-radius:11px;padding:11px 15px}
+.btn.primary{background:var(--accent)}
+.btn.stop{background:#91384f}
+.note{color:var(--muted);font-size:12px;line-height:1.55;margin:10px 0 0}
+.stage-box{display:flex;justify-content:center}
+.reel-stage{position:relative;width:min(100%,360px);aspect-ratio:9/16;overflow:hidden;border-radius:18px;background:#202638;isolation:isolate}
+.photo-layer{position:absolute;inset:0;z-index:-2;background:#202638 center/cover no-repeat}
+.photo-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0003 0%,#0001 42%,#0009 100%)}
+.quote-text{position:absolute;z-index:2;left:8%;right:8%;top:50%;transform:translateY(-50%);text-align:center;font-family:Georgia,"Noto Serif Devanagari",serif;font-size:clamp(22px,5.7vw,32px);font-weight:400;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;text-shadow:0 1px 4px #000,0 0 13px #000,0 0 22px #0008}
+.word{display:inline}
+.c1{color:#ff6f91}.c2{color:#ffd166}.c3{color:#70e1f5}.c4{color:#bd9aff}.c5{color:#8dffb0}
+.reel-play{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:#ffffffe8;color:#171923;font-size:30px;line-height:76px;text-align:center;padding:0;box-shadow:0 5px 25px #000b}
+.reel-play.hidden{display:none}
+.reel-stage.playing .quote-text{animation:glow 2.5s ease-in-out infinite alternate}
+@keyframes glow{from{text-shadow:0 1px 4px #000,0 0 10px #fff4}to{text-shadow:0 1px 4px #000,0 0 21px #fff9}}
+.stage-actions{display:flex;gap:9px;margin-top:12px}
+.stage-actions .btn{flex:1}
+.status{text-align:center;color:var(--muted);font-size:13px;line-height:1.4;min-height:20px;margin-top:10px}
+.empty{display:flex;align-items:center;justify-content:center;height:100%;padding:25px;text-align:center;color:#d4d8e6;font-size:14px}
 :fullscreen{background:#000}
 :fullscreen .reel-stage{width:min(100vw,56.25vh);height:min(100vh,177.78vw);max-height:100vh;border-radius:0}
-:fullscreen .reel-play-button{display:block}
-@media(max-width:420px){.app{padding:11px}.panel{padding:11px}.grid{grid-template-columns:1fr}.quote-text{font-size:clamp(20px,6vw,28px)}}
+:fullscreen .reel-play{display:block}
+@media(max-width:430px){body{padding:10px}.panel{padding:11px}.grid{grid-template-columns:1fr}.reel-stage{width:min(100%,350px)}}
 </style>
 </head>
 <body>
@@ -48,22 +52,27 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <h1>विचार Reel Studio</h1>
 
 <section class="panel">
-<label for="photoInput">Photo चुनें</label>
+<div class="field">
+<label for="photoInput">Reel के लिए Photo चुनें</label>
 <input id="photoInput" type="file" accept="image/*">
+</div>
 
-<label for="quoteInput" style="margin-top:12px">सुविचार / Quote</label>
-<textarea id="quoteInput" placeholder="अपना सुविचार यहाँ लिखें...">सच्चे विचार जीवन को सुंदर दिशा देते हैं।</textarea>
+<div class="field">
+<label for="quoteInput">सुविचार / Quote</label>
+<textarea id="quoteInput" placeholder="अपना सुविचार यहाँ लिखें...">सच्चे विचार जीवन को सुंदर दिशा देते हैं।
+धैर्य रखिए, सुंदर समय अवश्य आता है।</textarea>
+</div>
 
-<div class="grid" style="margin-top:10px">
+<div class="grid">
 <div>
 <label for="languageSelect">TTS भाषा</label>
 <select id="languageSelect">
-<option value="hi-IN">हिन्दी</option>
 <option value="sa-IN">संस्कृत</option>
+<option value="hi-IN">हिंदी</option>
 </select>
 </div>
 <div>
-<label for="speedSelect">बोलने की गति</label>
+<label for="speedSelect">TTS गति</label>
 <select id="speedSelect">
 <option value="0.75">धीमी</option>
 <option value="0.9" selected>सामान्य</option>
@@ -73,22 +82,27 @@ button:disabled{opacity:.5;cursor:not-allowed}
 </div>
 
 <div class="actions">
-<button id="previewButton" class="primary">Preview तैयार करें</button>
-<button id="stopButton" class="danger" disabled>Stop</button>
+<button id="previewButton" class="btn primary" type="button">Preview तैयार करें</button>
+<button id="stopButton" class="btn stop" type="button" disabled>Stop</button>
 </div>
-<p class="hint">Photo और quote तैयार करने के बाद Preview दबाएँ। फिर Reel को Full Screen करें, मोबाइल screen recorder शुरू करें और Reel के अंदर Play दबाएँ।</p>
+
+<p class="note">
+Photo चुनने के बाद Preview तैयार करें। फिर Full Screen दबाएँ, मोबाइल Screen Recorder शुरू करें और Reel के अंदर दिखाई देने वाले Play बटन को दबाएँ।
+</p>
 </section>
 
 <section class="panel">
-<div class="stage-wrap">
+<div class="stage-box">
 <div id="reelStage" class="reel-stage">
 <div id="photoLayer" class="photo-layer"></div>
+<div id="emptyMessage" class="empty">Photo चुनकर Preview तैयार करें</div>
 <div id="quoteText" class="quote-text"></div>
-<button id="reelPlayButton" class="reel-play-button" type="button" aria-label="Reel चलाएँ">▶</button>
+<button id="reelPlayButton" class="reel-play hidden" type="button" aria-label="Reel चलाएँ">▶</button>
 </div>
 </div>
-<div class="stage-controls">
-<button id="fullscreenButton" class="fullscreen">Full Screen</button>
+
+<div class="stage-actions">
+<button id="fullscreenButton" class="btn" type="button">Full Screen</button>
 </div>
 <div id="status" class="status" aria-live="polite"></div>
 </section>
