@@ -30,39 +30,35 @@ textarea{min-height:105px;resize:vertical;line-height:1.5}
 .reel-stage{position:relative;width:min(100%,360px);aspect-ratio:9/16;overflow:hidden;border-radius:18px;background:#202638;isolation:isolate}
 .photo-layer{position:absolute;inset:0;z-index:-2;background:#202638 center/cover no-repeat}
 .photo-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0003 0%,#0001 42%,#0009 100%)}
-.quote-text{position:absolute;z-index:2;left:8%;right:8%;top:50%;transform:translateY(-50%);text-align:center;font-family:Georgia,"Noto Serif Devanagari",serif;font-size:clamp(22px,5.7vw,32px);font-weight:400;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;text-shadow:0 1px 4px #000,0 0 13px #000,0 0 22px #0008}
+.quote-text{position:absolute;z-index:2;left:8%;right:8%;top:50%;transform:translateY(-50%);text-align:center;font-family:Georgia,"Noto Serif Devanagari",serif;font-size:clamp(22px,5.7vw,32px);font-weight:400;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;text-shadow:0 1px 4px #000,0 0 11px #000,0 0 18px #0008}
 .word{display:inline}
-.c1{color:#ff6f91}.c2{color:#ffd166}.c3{color:#70e1f5}.c4{color:#bd9aff}.c5{color:#8dffb0}
+.c1{color:#ffd6e0}.c2{color:#ffe3a3}.c3{color:#bcefff}.c4{color:#d9c2ff}.c5{color:#c7f5d9}
 .reel-play{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:#ffffffe8;color:#171923;font-size:30px;line-height:76px;text-align:center;padding:0;box-shadow:0 5px 25px #000b}
 .reel-play.hidden{display:none}
 .reel-stage.playing .quote-text{animation:glow 2.5s ease-in-out infinite alternate}
-@keyframes glow{from{text-shadow:0 1px 4px #000,0 0 10px #fff4}to{text-shadow:0 1px 4px #000,0 0 21px #fff9}}
+@keyframes glow{from{text-shadow:0 1px 4px #000,0 0 9px #fff4}to{text-shadow:0 1px 4px #000,0 0 16px #fff8}}
 .stage-actions{display:flex;gap:9px;margin-top:12px}
 .stage-actions .btn{flex:1}
 .status{text-align:center;color:var(--muted);font-size:13px;line-height:1.4;min-height:20px;margin-top:10px}
 .empty{display:flex;align-items:center;justify-content:center;height:100%;padding:25px;text-align:center;color:#d4d8e6;font-size:14px}
 :fullscreen{background:#000}
-:fullscreen .reel-stage{width:min(100vw,56.25vh);height:min(100vh,177.78vw);max-height:100vh;border-radius:0}
-:fullscreen .reel-play{display:block}
+#reelStage:fullscreen{width:min(100vw,56.25vh);height:min(100vh,177.78vw);max-height:100vh;border-radius:0}
 @media(max-width:430px){body{padding:10px}.panel{padding:11px}.grid{grid-template-columns:1fr}.reel-stage{width:min(100%,350px)}}
 </style>
 </head>
 <body>
 <main class="app">
 <h1>विचार Reel Studio</h1>
-
 <section class="panel">
 <div class="field">
 <label for="photoInput">Reel के लिए Photo चुनें</label>
 <input id="photoInput" type="file" accept="image/*">
 </div>
-
 <div class="field">
 <label for="quoteInput">सुविचार / Quote</label>
 <textarea id="quoteInput" placeholder="अपना सुविचार यहाँ लिखें...">सच्चे विचार जीवन को सुंदर दिशा देते हैं।
 धैर्य रखिए, सुंदर समय अवश्य आता है।</textarea>
 </div>
-
 <div class="grid">
 <div>
 <label for="languageSelect">TTS भाषा</label>
@@ -80,17 +76,12 @@ textarea{min-height:105px;resize:vertical;line-height:1.5}
 </select>
 </div>
 </div>
-
 <div class="actions">
 <button id="previewButton" class="btn primary" type="button">Preview तैयार करें</button>
 <button id="stopButton" class="btn stop" type="button" disabled>Stop</button>
 </div>
-
-<p class="note">
-Photo चुनने के बाद Preview तैयार करें। फिर Full Screen दबाएँ, मोबाइल Screen Recorder शुरू करें और Reel के अंदर दिखाई देने वाले Play बटन को दबाएँ।
-</p>
+<p class="note">Photo चुनने के बाद Preview तैयार करें। फिर Full Screen दबाएँ, मोबाइल Screen Recorder शुरू करें और Reel के अंदर दिखाई देने वाले Play बटन को दबाएँ।</p>
 </section>
-
 <section class="panel">
 <div class="stage-box">
 <div id="reelStage" class="reel-stage">
@@ -100,7 +91,6 @@ Photo चुनने के बाद Preview तैयार करें। �
 <button id="reelPlayButton" class="reel-play hidden" type="button" aria-label="Reel चलाएँ">▶</button>
 </div>
 </div>
-
 <div class="stage-actions">
 <button id="fullscreenButton" class="btn" type="button">Full Screen</button>
 </div>
