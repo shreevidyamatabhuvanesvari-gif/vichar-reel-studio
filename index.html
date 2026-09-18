@@ -1,93 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080b18">
 <title>Vichar Reel Studio</title>
 <style>
+:root{color-scheme:dark;--bg:#090b12;--panel:#151927;--line:#30364a;--text:#fff;--muted:#aab1c5;--accent:#9b7cff}
 *{box-sizing:border-box}
-body{margin:0;background:#080b18;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-.app{min-height:100vh;display:grid;place-items:center;padding:12px}
-.panel{width:min(100%,980px);display:grid;grid-template-columns:minmax(240px,360px) 1fr;gap:16px}
-.controls,.stagebox{background:#11162a;border:1px solid #29304a;border-radius:18px;padding:14px}
-.controls{display:flex;flex-direction:column;gap:10px}
-h1{font-size:1.2rem;margin:0 0 4px}
-label{font-size:.82rem;color:#b8c0d8;display:grid;gap:5px}
-input,textarea,select,button{font:inherit;border-radius:10px;border:1px solid #3a4565;background:#0a0e1d;color:#fff;padding:10px}
-textarea{resize:vertical;min-height:100px}
-button{cursor:pointer;background:#5b5cf0;border-color:#7475ff;font-weight:600}
-button.alt{background:#202943;border-color:#3b496d}
-button:disabled{opacity:.45;cursor:not-allowed}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.row>*{flex:1;min-width:100px}
-.hint{font-size:.75rem;color:#8e99b8;line-height:1.4;margin:0}
-.stagebox{display:grid;place-items:center}
-.stage{position:relative;width:min(100%,360px);aspect-ratio:9/16;overflow:hidden;background:#171c32;border-radius:12px;isolation:isolate}
-#photo{width:100%;height:100%;object-fit:cover;display:none}
-.shade{position:absolute;inset:0;background:linear-gradient(180deg,#0002,#0005 55%,#0009);z-index:1}
-.quote{position:absolute;z-index:2;inset:0;display:grid;place-items:center;padding:28px;text-align:center;white-space:pre-wrap;overflow:hidden}
-#current{font-size:clamp(1.2rem,5vw,2rem);line-height:1.55;font-weight:400;max-width:100%;color:#fff;text-shadow:0 0 5px #fff,0 0 14px #ff39d6,0 0 25px #32d9ff,0 0 38px #ffe45b;animation:glow 3s linear infinite}
-@keyframes glow{0%,100%{filter:hue-rotate(0)}50%{filter:hue-rotate(75deg)}}
-.empty{position:absolute;inset:0;display:grid;place-items:center;color:#8792b1;text-align:center;padding:20px;z-index:3}
-.badge{font-size:.75rem;color:#aeb8d4}
-.status{min-height:1.2em;color:#9fe7bd;font-size:.8rem}
-.recording .quote{padding:22px}
-.recording .shade{background:linear-gradient(180deg,#0001,#0004 55%,#0008)}
-@media(max-width:700px){
-.panel{grid-template-columns:1fr}
-.stagebox{order:-1}
-.stage{width:min(78vw,360px)}
-}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,760px);margin:auto;padding:16px}
+h1{font-size:22px;margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+label{display:block;color:var(--muted);font-size:13px;margin:0 0 6px}
+textarea,select,input{width:100%;border:1px solid var(--line);border-radius:10px;background:#0d101a;color:var(--text);padding:11px;outline:none}
+textarea{min-height:100px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+button{border:0;border-radius:10px;padding:10px 14px;background:#292f43;color:#fff}
+button.primary{background:var(--accent);color:#fff}
+button.danger{background:#8e3047}
+button:disabled{opacity:.5;cursor:not-allowed}
+.hint{color:var(--muted);font-size:12px;line-height:1.5;margin-top:9px}
+.stage-wrap{display:flex;justify-content:center}
+.reel-stage{position:relative;width:min(100%,360px);aspect-ratio:9/16;overflow:hidden;border-radius:18px;background:#111;isolation:isolate}
+.photo-layer{position:absolute;inset:0;background:#202536 center/cover no-repeat;z-index:-2}
+.photo-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0002,#0005 50%,#0009)}
+.quote-text{position:absolute;left:9%;right:9%;top:50%;transform:translateY(-50%);text-align:center;font-size:clamp(21px,5.4vw,31px);line-height:1.42;font-weight:400;white-space:pre-wrap;text-shadow:0 0 5px #000,0 0 12px #000;overflow-wrap:anywhere}
+.quote-text .word{display:inline;color:#fff}
+.quote-text .c1{color:#ff668a}.quote-text .c2{color:#ffd166}.quote-text .c3{color:#70e1f5}.quote-text .c4{color:#b58cff}.quote-text .c5{color:#8dffb0}
+.reel-play-button{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;font-size:30px;background:#ffffffdd;color:#171923;box-shadow:0 4px 25px #0008;z-index:5;padding:0}
+.reel-play-button.hidden{display:none}
+.stage-controls{display:flex;justify-content:center;gap:9px;margin-top:12px}
+.fullscreen{width:100%}
+.status{text-align:center;color:var(--muted);font-size:13px;min-height:20px;margin-top:10px}
+.recording .quote-text{animation:softGlow 2.5s ease-in-out infinite alternate}
+@keyframes softGlow{from{text-shadow:0 0 5px #000,0 0 10px #fff4}to{text-shadow:0 0 6px #000,0 0 18px #fff9}}
+:fullscreen{background:#000}
+:fullscreen .reel-stage{width:min(100vw,56.25vh);height:min(100vh,177.78vw);max-height:100vh;border-radius:0}
+:fullscreen .reel-play-button{display:block}
+@media(max-width:420px){.app{padding:11px}.panel{padding:11px}.grid{grid-template-columns:1fr}.quote-text{font-size:clamp(20px,6vw,28px)}}
 </style>
 </head>
 <body>
 <main class="app">
+<h1>विचार Reel Studio</h1>
+
 <section class="panel">
-<section class="controls">
-<h1>Vichar Reel Studio</h1>
-<p class="hint">फोटो से 9:16 सुविचार रील बनाइए और मोबाइल स्क्रीन रिकॉर्डर से रिकॉर्ड कीजिए।</p>
+<label for="photoInput">Photo चुनें</label>
+<input id="photoInput" type="file" accept="image/*">
 
-<label>फोटो चुनें
-<input id="image" type="file" accept="image/*">
-</label>
+<label for="quoteInput" style="margin-top:12px">सुविचार / Quote</label>
+<textarea id="quoteInput" placeholder="अपना सुविचार यहाँ लिखें...">सच्चे विचार जीवन को सुंदर दिशा देते हैं।</textarea>
 
-<label>भाषा
-<select id="lang">
-<option value="hi-IN">हिंदी</option>
+<div class="grid" style="margin-top:10px">
+<div>
+<label for="languageSelect">TTS भाषा</label>
+<select id="languageSelect">
+<option value="hi-IN">हिन्दी</option>
 <option value="sa-IN">संस्कृत</option>
 </select>
-</label>
-
-<label>सुविचार
-<textarea id="text" placeholder="सुविचार यहाँ लिखें…">सत्यमेव जयते।
-सत्य की ही विजय होती है।</textarea>
-</label>
-
-<div class="row">
-<button id="play">▶ चलाएँ</button>
-<button id="pause" class="alt">Ⅱ रोकें</button>
-<button id="stop" class="alt">■ बंद</button>
+</div>
+<div>
+<label for="speedSelect">बोलने की गति</label>
+<select id="speedSelect">
+<option value="0.75">धीमी</option>
+<option value="0.9" selected>सामान्य</option>
+<option value="1.05">थोड़ी तेज</option>
+</select>
+</div>
 </div>
 
-<div class="row">
-<button id="fullscreen" class="alt">⛶ पूर्ण स्क्रीन</button>
-<button id="record" class="alt">● रिकॉर्डिंग मोड</button>
+<div class="actions">
+<button id="previewButton" class="primary">Preview तैयार करें</button>
+<button id="stopButton" class="danger" disabled>Stop</button>
 </div>
-
-<p id="voice" class="badge">आवाज़ खोजी जा रही है…</p>
-<p id="status" class="status"></p>
-<p class="hint">रिकॉर्डिंग के लिए पहले “रिकॉर्डिंग मोड” दबाएँ, फिर मोबाइल का Screen Recorder शुरू करें।</p>
+<p class="hint">Photo और quote तैयार करने के बाद Preview दबाएँ। फिर Reel को Full Screen करें, मोबाइल screen recorder शुरू करें और Reel के अंदर Play दबाएँ।</p>
 </section>
 
-<section class="stagebox">
-<div id="stage" class="stage">
-<img id="photo" alt="चयनित फोटो">
-<div class="shade"></div>
-<div class="quote"><div id="current"></div></div>
-<div id="empty" class="empty">फोटो चुनें और “चलाएँ” दबाएँ</div>
+<section class="panel">
+<div class="stage-wrap">
+<div id="reelStage" class="reel-stage">
+<div id="photoLayer" class="photo-layer"></div>
+<div id="quoteText" class="quote-text"></div>
+<button id="reelPlayButton" class="reel-play-button" type="button" aria-label="Reel चलाएँ">▶</button>
 </div>
-</section>
+</div>
+<div class="stage-controls">
+<button id="fullscreenButton" class="fullscreen">Full Screen</button>
+</div>
+<div id="status" class="status" aria-live="polite"></div>
 </section>
 </main>
 <script src="script.js"></script>
