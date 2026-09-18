@@ -9,31 +9,32 @@ const stopButton = $("stopButton");
 const fullscreenButton = $("fullscreenButton");
 const reelStage = $("reelStage");
 const photoLayer = $("photoLayer");
+const emptyMessage = $("emptyMessage");
 const quoteText = $("quoteText");
 const reelPlayButton = $("reelPlayButton");
 const statusBox = $("status");
 
 let photoUrl = "";
 let lines = [];
-let currentLine = -1;
-let playing = false;
 let voices = [];
+let playing = false;
+let runId = 0;
 
-function setStatus(message) {
+function status(message) {
   statusBox.textContent = message || "";
 }
 
-function loadVoices() {
+function refreshVoices() {
   voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
 }
 
 if ("speechSynthesis" in window) {
-  loadVoices();
-  speechSynthesis.onvoiceschanged = loadVoices;
+  refreshVoices();
+  speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
-function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, char => ({
+function escapeHtml(text) {
+  return text.replace(/[&<>"']/g, char => ({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
@@ -42,18 +43,16 @@ function escapeHtml(value) {
   }[char]));
 }
 
-function coloredText(text) {
-  const safe = escapeHtml(text);
-  const parts = safe.split(/(\s+)/);
-  let color = 0;
-  return parts.map(part => {
+function makeColoredText(text) {
+  let colorIndex = 0;
+  return escapeHtml(text).split(/(\s+)/).map(part => {
     if (/^\s+$/.test(part)) return part;
-    const className = "c" + ((color++ % 5) + 1);
-    return `<span class="word ${className}">${part}</span>`;
+    colorIndex++;
+    return `<span class="word c${((colorIndex - 1) % 5) + 1}">${part}</span>`;
   }).join("");
 }
 
-function splitQuote(text) {
+function getLines(text) {
   return text
     .replace(/\r/g, "")
     .split(/\n+/)
@@ -61,134 +60,173 @@ function splitQuote(text) {
     .filter(Boolean);
 }
 
-function chooseVoice(lang) {
-  const matching = voices.filter(voice =>
-    voice.lang && voice.lang.toLowerCase().startsWith(lang.slice(0, 2).toLowerCase())
+function selectVoice(language) {
+  const prefix = language.slice(0, 2).toLowerCase();
+  const matches = voices.filter(voice =>
+    String(voice.lang || "").toLowerCase().startsWith(prefix)
   );
-  if (!matching.length) return null;
 
-  const femaleWords = /female|woman|zira|samantha|veena|lekha|google हिन्दी|google hindi/i;
-  return matching.find(voice => femaleWords.test(voice.name)) || matching[0];
+  if (!matches.length) return null;
+
+  const femalePattern = /female|woman|zira|samantha|veena|lekha|google hindi|google हिन्दी|priya|heera/i;
+  return matches.find(voice => femalePattern.test(voice.name)) || matches[0];
+}
+
+function hasPhoto() {
+  return Boolean(photoUrl);
 }
 
 function preparePreview() {
-  const quote = quoteInput.value.trim();
+  const text = quoteInput.value.trim();
 
-  if (!quote) {
-    setStatus("कृपया सुविचार लिखें।");
+  if (!hasPhoto()) {
+    status("पहले एक Photo चुनें।");
     return false;
   }
 
-  lines = splitQuote(quote);
+  if (!text) {
+    status("कृपया सुविचार लिखें।");
+    return false;
+  }
+
+  lines = getLines(text);
 
   if (!lines.length) {
-    setStatus("कम-से-कम एक quote line आवश्यक है।");
+    status("कम-से-कम एक quote line आवश्यक है।");
     return false;
   }
 
-  quoteText.innerHTML = coloredText(lines[0]);
-  currentLine = -1;
-  playing = false;
+  stopPlayback(false);
+  emptyMessage.style.display = "none";
+  quoteText.innerHTML = makeColoredText(lines[0]);
   reelPlayButton.classList.remove("hidden");
-  reelStage.classList.remove("recording");
-  setStatus("Preview तैयार है।");
+  status("Preview तैयार है।");
   return true;
 }
 
-function speakLine(text) {
+function speak(text, id) {
   return new Promise(resolve => {
+    if (!playing || id !== runId) {
+      resolve(false);
+      return;
+    }
+
     if (!("speechSynthesis" in window)) {
-      setStatus("इस browser में Text-to-Speech उपलब्ध नहीं है।");
-      resolve();
+      status("इस browser में TTS उपलब्ध नहीं है।");
+      resolve(true);
       return;
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    const lang = languageSelect.value;
-    const voice = chooseVoice(lang);
+    const language = languageSelect.value;
+    const voice = selectVoice(language);
 
-    utterance.lang = lang;
+    utterance.lang = language;
     utterance.rate = Number(speedSelect.value);
     utterance.pitch = 1;
     utterance.volume = 1;
 
     if (voice) utterance.voice = voice;
 
-    utterance.onend = resolve;
-    utterance.onerror = resolve;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      resolve(true);
+    };
+
+    utterance.onend = finish;
+    utterance.onerror = finish;
     speechSynthesis.speak(utterance);
   });
 }
 
-function wait(ms) {
+function pause(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function playReel() {
-  if (playing || !lines.length) return;
+  if (playing) return;
+
+  if (!preparePreview()) return;
 
   playing = true;
-  currentLine = -1;
+  runId++;
+  const id = runId;
+
   reelPlayButton.classList.add("hidden");
-  reelStage.classList.add("recording");
   stopButton.disabled = false;
-  setStatus("Reel चल रही है...");
+  reelStage.classList.add("playing");
+  status("Reel चल रही है...");
 
   if ("speechSynthesis" in window) speechSynthesis.cancel();
 
   for (let index = 0; index < lines.length; index++) {
-    if (!playing) break;
+    if (!playing || id !== runId) return;
 
-    currentLine = index;
-    quoteText.innerHTML = coloredText(lines[index]);
-    await speakLine(lines[index]);
-    await wait(250);
+    quoteText.innerHTML = makeColoredText(lines[index]);
+    const completed = await speak(lines[index], id);
+
+    if (!completed || !playing || id !== runId) return;
+    await pause(300);
   }
 
-  if (playing) {
-    setStatus("Reel पूरी हो गई।");
-  } else {
-    setStatus("Reel रोक दी गई।");
+  if (id === runId) {
+    playing = false;
+    stopButton.disabled = true;
+    reelStage.classList.remove("playing");
+    reelPlayButton.classList.remove("hidden");
+    status("Reel पूरी हो गई।");
+  }
+}
+
+function stopPlayback(showStatus = true) {
+  runId++;
+  playing = false;
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
   }
 
-  playing = false;
   stopButton.disabled = true;
-  reelStage.classList.remove("recording");
+  reelStage.classList.remove("playing");
   reelPlayButton.classList.remove("hidden");
+
+  if (showStatus) status("Reel रोक दी गई।");
 }
 
-function stopReel() {
-  playing = false;
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-  stopButton.disabled = true;
-  reelStage.classList.remove("recording");
-  reelPlayButton.classList.remove("hidden");
-  setStatus("Reel रोक दी गई।");
-}
-
-function setPhoto(file) {
+function loadPhoto(file) {
   if (!file) return;
 
+  if (!file.type.startsWith("image/")) {
+    status("कृपया केवल image/photo file चुनें।");
+    photoInput.value = "";
+    return;
+  }
+
   if (photoUrl) URL.revokeObjectURL(photoUrl);
+
   photoUrl = URL.createObjectURL(file);
   photoLayer.style.backgroundImage = `url("${photoUrl}")`;
-  setStatus("Photo लोड हो गई।");
+  emptyMessage.style.display = "none";
+  status("Photo सफलतापूर्वक लोड हो गई।");
 }
 
-async function enterFullscreen() {
+async function toggleFullscreen() {
   try {
-    if (!document.fullscreenElement) {
-      await reelStage.requestFullscreen();
-    } else {
+    if (document.fullscreenElement) {
       await document.exitFullscreen();
+      return;
     }
+
+    await reelStage.requestFullscreen();
   } catch (error) {
-    setStatus("Full Screen उपलब्ध नहीं हो सका।");
+    status("Full Screen इस device/browser में उपलब्ध नहीं है।");
   }
 }
 
 photoInput.addEventListener("change", event => {
-  setPhoto(event.target.files[0]);
+  loadPhoto(event.target.files[0]);
 });
 
 previewButton.addEventListener("click", () => {
@@ -200,22 +238,20 @@ reelPlayButton.addEventListener("click", () => {
 });
 
 stopButton.addEventListener("click", () => {
-  stopReel();
+  stopPlayback();
 });
 
 fullscreenButton.addEventListener("click", () => {
-  enterFullscreen();
+  toggleFullscreen();
 });
 
 document.addEventListener("fullscreenchange", () => {
   if (document.fullscreenElement === reelStage) {
-    setStatus("Full Screen सक्रिय है। Screen recorder शुरू करके Reel के अंदर Play दबाएँ।");
+    status("Full Screen सक्रिय है। अब Screen Recorder शुरू करके Play दबाएँ।");
   }
 });
 
 window.addEventListener("beforeunload", () => {
+  stopPlayback(false);
   if (photoUrl) URL.revokeObjectURL(photoUrl);
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
 });
-
-preparePreview();
